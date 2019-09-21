@@ -10,6 +10,7 @@ defmodule CupWeb.Router do
   end
 
   pipeline :api do
+    plug CORSPlug, origin: "*"
     plug :accepts, ["json"]
   end
 
@@ -20,7 +21,9 @@ defmodule CupWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", CupWeb do
-  #   pipe_through :api
-  # end
+  scope "/v1", CupWeb do
+    pipe_through :api
+
+    get "/games", GameController, :index
+  end
 end
