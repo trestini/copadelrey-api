@@ -1,0 +1,194 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Copa Del Rey
+  description: Copa Del Rey de Sinuca
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:3000
+paths:
+  /ranking:
+    get:
+      description: |
+        Devolve o ranking dos jogadores capacitados e com envergadura moral para participar do saudoso campeonado
+      operationId: getRanking
+      parameters:
+        - name: mod
+          in: query
+          description: Modalidade dos jogos - (D)upla ou (S)olo
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista com os jogadores e posicao no ranking
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RankingPosition'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /players:
+    get:
+      description: |
+        Devolve os jogadores capacitados e com envergadura moral para participar do saudoso campeonado
+      operationId: get all players
+      responses:
+        '200':
+          description: Lista com os jogadores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /games:
+    get:
+      description: |
+        Devolve uma lista com os jogos realizados na ultima etapa
+      operationId: get last stage games
+      parameters:
+        - name: id
+          in: path
+          description: ID of pet to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista com os jogos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /game/{stage}:
+    get:
+      description: |
+        Devolve uma lista com os jogos realizados na etapa informada
+      operationId: get game from stage
+      parameters:
+        - name: stage
+          in: path
+          description: ID da etapa
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista com os jogos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      description: |
+        Adiciona um jogo na etapa
+      operationId: add new game in stage
+      parameters:
+        - name: stage
+          in: path
+          description: ID da etapa
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Detalhes do jogo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Game'
+      responses:
+        '201':
+          description: game response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Game:
+      type: object
+      properties:
+        date:
+          type: string
+          format: datetime
+        stage:
+          type: string
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+        balls_remaining:
+          type: integer
+        rule:
+          type: string
+
+    Player:
+      type: object
+      properties:
+        name:
+          type: string
+        photo_url:
+          type: string
+        badge:
+          type: string
+
+    RankingPosition:
+      type: object
+      properties:
+        player:
+          $ref: '#/components/schemas/Player'
+        position:
+          type: integer
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
