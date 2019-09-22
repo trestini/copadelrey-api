@@ -42,5 +42,7 @@ defmodule CupWeb.Endpoint do
     key: "_copadelrey_api_key",
     signing_salt: "tC8TxvNH"
 
+  plug CORSPlug
+
   plug CupWeb.Router
 end
