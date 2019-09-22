@@ -1,6 +1,6 @@
 defmodule CupWeb.Game do
   @derive Jason.Encoder
-  defstruct [:id, :date, :stage, :players, :balls_remaining, :rule]
+  defstruct [:id, :date, :stage, :players, :balls_remaining, :rule, :ended, :winner_team]
 
   @spec from_schema(Cup.Game.t) :: CupWeb.Game.t
   def from_schema(game) do
@@ -10,7 +10,9 @@ defmodule CupWeb.Game do
       stage: game.stage |> CupWeb.Stage.from_schema,
       players: game.players |> Enum.map(&CupWeb.Player.from_schema(&1)),
       balls_remaining: game.balls_remaining,
-      rule: game.rule
+      rule: game.rule,
+      ended: game.ended,
+      winner_team: game.winner_team
     }
   end
 end

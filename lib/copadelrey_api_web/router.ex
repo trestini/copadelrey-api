@@ -24,6 +24,7 @@ defmodule CupWeb.Router do
     pipe_through :api
 
     post    "/game/:stage_id", GameController, :new_game
+    patch   "/game/:game_id", GameController, :patch
 
     post    "/player", PlayerController, :save
     delete  "/player", PlayerController, :remove

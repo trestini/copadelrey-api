@@ -7,6 +7,7 @@ defmodule Cup.Game do
     field :ended, :boolean, default: false
     field :rule, :string
     field :type, :string
+    field :winner_team, :string
     belongs_to :stage, Cup.Stage
     many_to_many :players, Cup.Player, join_through: Cup.GamePlayer
 

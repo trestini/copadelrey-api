@@ -88,7 +88,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /games:
     get:
       tags:
@@ -111,7 +110,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /game/{stage}:
     get:
       tags:
@@ -142,7 +140,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
     post:
       tags:
         - game
@@ -173,6 +170,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /game/{game_id}:
+    patch:
+      tags:
+        - game
+      description: |
+        Altera propriedades do jogo
+      operationId: patches game
+      parameters:
+        - name: game_id
+          in: path
+          description: ID da batalha campal
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Detalhes do jogo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGame'
+      responses:
+        '201':
+          description: game response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 components:
   schemas:
@@ -194,6 +222,20 @@ components:
           type: integer
         rule:
           type: string
+        ended:
+          type: boolean
+        type:
+          type: string
+
+    PatchedGame:
+      type: object
+      properties:
+        balls_remaining:
+          type: integer
+        rule:
+          type: string
+        ended:
+          type: boolean
 
     NewGame:
       type: object
