@@ -76,6 +76,22 @@ defmodule CupWeb.GameController do
 
   end
 
+  def list_all(conn, _params) do
+    stage = (from s in Stage, where: s.is_active == true) |> Repo.one
+    games = (from g in Game, where: g.stage_id == ^stage.id)
+      |> Repo.all
+      |> Repo.preload([:players, :stage])
+      |> Enum.map(&CupWeb.Game.from_schema/1)
+      |> Enum.map(fn game ->
+        teams = (from gp in Cup.GamePlayer, where: gp.game_id == ^game.id)
+          |> Repo.all
+          |> Enum.map(&CupWeb.GamePlayer.from_schema/1)
+        Map.put(game, :teams, teams)
+      end)
+
+    json conn, games
+  end
+
   defp to_struct(kind, attrs) do
     struct = struct(kind)
     Enum.reduce Map.to_list(struct), struct, fn {k, _}, acc ->

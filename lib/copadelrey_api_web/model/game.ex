@@ -1,6 +1,6 @@
 defmodule CupWeb.Game do
   @derive Jason.Encoder
-  defstruct [:id, :date, :stage, :players, :balls_remaining, :rule, :ended, :winner_team]
+  defstruct [:id, :date, :stage, :players, :balls_remaining, :rule, :ended, :winner_team, :teams]
 
   @spec from_schema(Cup.Game.t) :: CupWeb.Game.t
   def from_schema(game) do

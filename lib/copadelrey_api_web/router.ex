@@ -25,6 +25,7 @@ defmodule CupWeb.Router do
 
     post    "/game/:stage_id", GameController, :new_game
     patch   "/game/:game_id", GameController, :patch
+    get     "/games", GameController, :list_all
 
     post    "/player", PlayerController, :save
     delete  "/player", PlayerController, :remove
