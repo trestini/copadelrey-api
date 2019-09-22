@@ -7,8 +7,8 @@ defmodule CupWeb.PlayerController do
 
   @spec save(Plug.Conn.t(), %{is_active: Boolean.t, name: String.t}) :: Plug.Conn.t()
   def save(conn, %{"is_active" => is_active, "name" => name}) do
-    {:ok, inserted} = Repo.insert %Player{name: name, is_active: is_active}
-    json conn, CupWeb.Player.from_schema(inserted)
+    {:ok, _} = Repo.insert %Player{name: name, is_active: is_active}
+    conn |> send_resp(201, "")
   end
 
   @spec remove(Plug.Conn.t(), %{id: Number.t}) :: Plug.Conn.t()
