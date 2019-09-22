@@ -14,13 +14,6 @@ defmodule CupWeb.GameController do
     game = to_struct(Game, params)
 
     inserted = Repo.transaction(fn ->
-      # game = %Game{
-      #   balls_remaining: (if balls_remaining, do: balls_remaining, else: nil),
-      #   rule: (if rule, do: rule, else: nil),
-      #   ended: false,
-      #   stage: Repo.one(from s in Stage, where: s.id == ^stage_id)
-      # }
-
       {:ok, new_game} = Repo.insert game
 
       params["teams"] |> Enum.map(fn t ->
@@ -55,15 +48,29 @@ defmodule CupWeb.GameController do
       {true, nil} ->
         conn
         |> put_status(:bad_request)
-        |> json(%{code: 400, message: "winner team must be provided"})
+        |> json(%{code: 400, message: "on ending game, a winner team must be provided"})
       _ ->
-        changeset = Repo.get!(Game, params["game_id"])
-        |> Repo.preload([:stage, :players])
-        |> Ecto.Changeset.change(changes)
 
-        case Repo.update changeset do
-          {:ok, game} -> json conn, CupWeb.Game.from_schema(game)
-          {:error, _changeset} -> conn |> send_resp(414, "")
+        team_exists = (from gp in Cup.GamePlayer, where: gp.team == ^params["winner_team"])
+          |> Repo.exists?
+
+        if !team_exists do
+          conn
+          |> put_status(:bad_request)
+          |> json(%{code: 400, message: "provided team doesn't exists"})
+        else
+          changeset = Repo.get!(Game, params["game_id"])
+          |> Repo.preload([:stage, :players])
+          |> Ecto.Changeset.change(changes)
+
+          case Repo.update changeset do
+            {:ok, game} -> json conn, CupWeb.Game.from_schema(game)
+            {:error, _changeset} ->
+              conn
+              |> put_status(:bad_request)
+              |> json(%{code: 400, message: "unknown error"})
+
+        end
       end
     end
 
