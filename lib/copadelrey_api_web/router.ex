@@ -23,7 +23,7 @@ defmodule CupWeb.Router do
   scope "/v1", CupWeb do
     pipe_through :api
 
-    get     "/games", GameController, :index
+    post    "/game/:stage_id", GameController, :new_game
 
     post    "/player", PlayerController, :save
     delete  "/player", PlayerController, :remove

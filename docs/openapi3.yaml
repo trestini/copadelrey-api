@@ -7,12 +7,13 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:4000/v1
+  - url: https://copadelrey-api.herokuapp.com/v1
 paths:
   /ranking:
     get:
       description: |
-        Devolve o ranking dos jogadores capacitados e com envergadura moral para participar do saudoso campeonado
+        Devolve o ranking dos jogadores capacitados e com envergadura moral para participar do saudoso campeonato
       operationId: getRanking
       parameters:
         - name: mod
@@ -36,11 +37,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /players:
+  /player:
     get:
+      tags: 
+        - player
       description: |
         Devolve os jogadores capacitados e com envergadura moral para participar do saudoso campeonado
       operationId: get all players
+      parameters:
+        - name: like
+          in: query
+          description: filtro por nome do jogador (like)
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Lista com os jogadores
@@ -56,20 +66,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - player
+      description: |
+        Adiciona um novo jogador
+      operationId: add new player
+      requestBody:
+        description: Informacoes sobre o cabra que acha que vai ganhar alguma coisa jogando sinuca no trampo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+      responses:
+        '201':
+          description: game response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /games:
     get:
+      tags:
+        - game
       description: |
-        Devolve uma lista com os jogos realizados na ultima etapa
-      operationId: get last stage games
-      parameters:
-        - name: id
-          in: path
-          description: ID of pet to fetch
-          required: true
-          schema:
-            type: integer
-            format: int64
+        Devolve uma lista com os jogos das etapas abertas
+      operationId: get current stage games
       responses:
         '200':
           description: Lista com os jogos
@@ -88,6 +114,8 @@ paths:
 
   /game/{stage}:
     get:
+      tags:
+        - game
       description: |
         Devolve uma lista com os jogos realizados na etapa informada
       operationId: get game from stage
@@ -116,6 +144,8 @@ paths:
                 $ref: '#/components/schemas/Error'
 
     post:
+      tags:
+        - game
       description: |
         Adiciona um jogo na etapa
       operationId: add new game in stage
@@ -133,7 +163,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Game'
+              $ref: '#/components/schemas/NewGame'
       responses:
         '201':
           description: game response
@@ -149,11 +179,13 @@ components:
     Game:
       type: object
       properties:
+        id:
+          type: integer
         date:
           type: string
           format: datetime
         stage:
-          type: string
+          $ref: '#/components/schemas/Stage'
         players:
           type: array
           items:
@@ -163,15 +195,43 @@ components:
         rule:
           type: string
 
+    NewGame:
+      type: object
+      properties:
+        balls_remaining:
+          type: integer
+        rule:
+          type: string
+        ended:
+          type: boolean
+        teams:
+          type: array
+          items:
+            properties:
+              name:
+                type: string
+              players:
+                type: array
+                items:
+                  type: integer
+
+    Stage:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
     Player:
       type: object
       properties:
+        id:
+          type: string
         name:
           type: string
-        photo_url:
-          type: string
-        badge:
-          type: string
+        is_active:
+          type: boolean
 
     RankingPosition:
       type: object
